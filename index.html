@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIRTY VOTE II: Peta Jalan Ancaman Demokrasi Indonesia</title>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <!-- Modern Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #aa2222 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Glassmorphism container */
+        .glass-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #ea6666, #631010);
+            z-index: 1000;
+            transition: width 0.3s ease;
+        }
+
+        header {
+            min-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px 24px;
+            position: relative;
+        }
+
+        .label {
+            display: inline-block;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-radius: 50px;
+            margin-bottom: 32px;
+            animation: fadeIn 0.8s ease-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .label:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            margin-bottom: 24px;
+            letter-spacing: -3px;
+            color: #ff0000;
+            animation: fadeInUp 1s ease-out 0.2s both;
+            background: linear-gradient(135deg, #ffffff 0%, rgba(238, 23, 23, 0.8) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: clamp(0.5rem, 1.2vw, 0.9rem);
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 500px;
+            margin: 0 auto;
+            font-weight: 400;
+            animation: fadeInUp 1s ease-out 0.4s both;
+            line-height: 1.7;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section {
+            margin: 120px 0;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .section-number {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 2.75rem);
+            font-weight: 700;
+            margin-bottom: 48px;
+            letter-spacing: -1px;
+            color: #ffffff;
+        }
+
+        .pillar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .pillar {
+            padding: 40px 32px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .pillar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .pillar:hover::before {
+            opacity: 1;
+        }
+
+        .pillar:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .pillar-icon {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(90deg, #ea6666, #631010);
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(234, 102, 102, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .pillar:hover .pillar-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .pillar-icon i {
+            color: #ffffff;
+            font-size: 28px;
+        }
+
+        .pillar-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .pillar-subtitle {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .pillar ul {
+            list-style: none;
+        }
+
+        .pillar li {
+            margin: 16px 0;
+            padding-left: 28px;
+            position: relative;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .pillar li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 6px;
+            height: 6px;
+            background: linear-gradient(90deg, #ea6666, #631010);
+            border-radius: 50%;
+        }
+
+        .cycle-container {
+            max-width: 700px;
+            margin: 64px auto;
+            position: relative;
+        }
+
+        .cycle-item {
+            padding: 40px;
+            margin: 32px 0;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            border-left: 4px solid #ea6666;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .cycle-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(12px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .cycle-number {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .cycle-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .cycle-desc {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        .cycle-arrow {
+            text-align: center;
+            margin: 24px 0;
+            opacity: 0.6;
+        }
+
+        .cycle-arrow i {
+            font-size: 32px;
+            color: rgba(255, 255, 255, 0.6);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .cycle-alert {
+            padding: 40px;
+            background: linear-gradient(135deg, #1a0404 0%, #521313 100%);
+            color: #fff;
+            border-radius: 20px;
+            text-align: center;
+            margin-top: 48px;
+            box-shadow: 0 20px 60px rgba(95, 18, 18, 0.3);
+        }
+
+        .cycle-alert h3 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .cycle-alert p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .impact-card {
+            padding: 40px 32px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .impact-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-12px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .impact-icon {
+            width: 56px;
+            height: 56px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ea6666 0%, #631010 100%);
+            border-radius: 16px;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(234, 102, 102, 0.3);
+        }
+
+        .impact-icon i {
+            color: #ffffff;
+            font-size: 24px;
+        }
+
+        .impact-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+
+        .impact-desc {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        .action-grid {
+            margin-top: 48px;
+            display: grid;
+            gap: 24px;
+        }
+
+        .action-item {
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            border-left: 4px solid #ea6666;
+            transition: all 0.3s ease;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 24px;
+            align-items: start;
+            cursor: pointer;
+        }
+
+        .action-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(12px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-icon {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ea6666 0%, #631010 100%);
+            border-radius: 16px;
+            position: relative;
+            flex-shrink: 0;
+            box-shadow: 0 8px 32px rgba(234, 102, 102, 0.3);
+        }
+
+        .action-icon i {
+            color: #ffffff;
+            font-size: 24px;
+        }
+
+        .action-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .action-content p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 80px 24px;
+            margin-top: 120px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .hashtags {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: 1px;
+            margin-bottom: 32px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .social-link-small {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 25px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-link-small::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .social-link-small:hover::before {
+            left: 100%;
+        }
+
+        .social-link-small:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            color: #ffffff;
+        }
+
+        .social-link-small i {
+            font-size: 16px;
+        }
+
+        .footer-disclaimer {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        .footer-disclaimer strong {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+
+        .scroll-indicator {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 52px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 1.5s forwards;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .scroll-indicator::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 2px;
+            animation: scroll 2s ease-in-out infinite;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-50%) translateY(16px);
+                opacity: 0;
+            }
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #eee, transparent);
+            margin: 80px 0;
+        }
+
+        @media (max-width: 768px) {
+            .section {
+                margin: 80px 0;
+            }
+
+            .pillar-grid,
+            .impact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-item {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            header {
+                min-height: 70vh;
+            }
+
+            .social-link {
+                padding: 14px 24px;
+                font-size: 0.85rem;
+            }
+
+            .social-links {
+                gap: 12px;
+            }
+
+            .social-link-small {
+                padding: 10px 16px;
+                font-size: 0.8rem;
+            }
+
+            iframe {
+                width: 100%;
+                max-width: 400px;
+                height: 225px;
+            }
+        }
+
+        strong {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* Social link styling */
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            margin-top: 32px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .social-link:hover::before {
+            left: 100%;
+        }
+
+        .social-link:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            color: #ffffff;
+        }
+
+        .social-link i {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .social-link:hover i {
+            transform: scale(1.2);
+        }
+
+        .social-badge {
+            background: linear-gradient(90deg, #ea6666, #631010);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-left: 8px;
+        }
+
+        /* Interactive hover effects */
+        .interactive-element {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .interactive-element:hover {
+            transform: translateY(-4px);
+        }
+
+        /* Particle animation */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+                opacity: 0.7;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-bar"></div>
+    
+    <div class="container">
+        <header>
+            <div class="label">INFOGRAFIS</div>
+            <h1>DIRTY VOTE II</h1>
+            <p class="subtitle">Rangkuman singkat dari sebuah video dari channel youtube "Dirty Vote". Tonton video untuk informasi lebih lengkap.</p>
+            <br>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/895Cqij7i00?si=g2dUoldIPH0uw1Fq" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+            <a href="https://x.com/DirtyVote" class="social-link" target="_blank" rel="noopener noreferrer">
+                <i data-lucide="twitter"></i>
+                <span>Ikuti Investigasi Mendalam</span>
+                <span class="social-badge">@DirtyVote</span>
+            </a>
+        </header>
+
+        <div class="section">
+            <div class="section-number">BAGIAN 01</div>
+            <h2 class="section-title">Fondasi Kekuasaan "3O"</h2>
+            
+            <div class="pillar-grid">
+                <div class="pillar">
+                    <div class="pillar-icon">
+                        <i data-lucide="zap"></i>
+                    </div>
+                    <h3 class="pillar-title">Otot</h3>
+                    <p class="pillar-subtitle">Kekuatan Aparat & Negara</p>
+                    <ul>
+                        <li><strong>Politisasi Polri & TNI:</strong> Kewenangan diperluas, Dwifungsi ABRI gaya baru diaktifkan. Aparat menjadi alat kekuasaan, bukan penjaga negara.</li>
+                        <li><strong>Mobilisasi Aparatur Desa:</strong> Loyalitas kepala desa ditukar dengan perpanjangan masa jabatan dan dana desa.</li>
+                        <li><strong>Bansos Sebagai Senjata Elektoral:</strong> Bantuan sosial yang seharusnya untuk rakyat diubah menjadi alat transaksional untuk membeli suara.</li>
+                    </ul>
+                </div>
+
+                <div class="pillar">
+                    <div class="pillar-icon">
+                        <i data-lucide="brain"></i>
+                    </div>
+                    <h3 class="pillar-title">Otak</h3>
+                    <p class="pillar-subtitle">Manipulasi Hukum & Politik</p>
+                    <ul>
+                        <li><strong>Pembajakan Mahkamah Konstitusi:</strong> Putusan 90 menjadi preseden "cacat etik" yang meloloskan Gibran melalui konflik kepentingan.</li>
+                        <li><strong>Membangun Koalisi Raksasa:</strong> Tujuannya satu: melumpuhkan oposisi dan menghilangkan mekanisme checks and balances.</li>
+                        <li><strong>Hukum Menjadi Senjata:</strong> Kritik dibungkam, lawan politik dikriminalisasi. Keadilan hanya tajam ke bawah.</li>
+                    </ul>
+                </div>
+
+                <div class="pillar">
+                    <div class="pillar-icon">
+                        <i data-lucide="dollar-sign"></i>
+                    </div>
+                    <h3 class="pillar-title">Ongkos</h3>
+                    <p class="pillar-subtitle">Oligarki & Pembiayaan Politik</p>
+                    <ul>
+                        <li><strong>Politik Balas Budi:</strong> Jabatan strategis di BUMN dibagi-bagikan kepada tim sukses dan relawan sebagai "hadiah".</li>
+                        <li><strong>Konsesi Sumber Daya Alam:</strong> Izin tambang dan proyek strategis nasional (PSN) menjadi alat tukar dengan pemodal besar.</li>
+                        <li><strong>"Patriot Bond":</strong> Skema yang membuat negara "berutang budi" pada segelintir konglomerat, mengunci kebijakan masa depan.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section">
+            <div class="section-number">BAGIAN 02</div>
+            <h2 class="section-title">Lingkaran Setan Demokrasi</h2>
+            
+            <div class="cycle-container">
+                <div class="cycle-item">
+                    <div class="cycle-number">TAHAP 01</div>
+                    <h3 class="cycle-title">Modal Oligarki (Ongkos)</h3>
+                    <p class="cycle-desc">Dana dari para konglomerat mengalir untuk membiayai operasi politik.</p>
+                </div>
+                
+                <div class="cycle-arrow">
+                    <i data-lucide="arrow-down"></i>
+                </div>
+                
+                <div class="cycle-item">
+                    <div class="cycle-number">TAHAP 02</div>
+                    <h3 class="cycle-title">Rebut Kekuasaan (Otak & Otot)</h3>
+                    <p class="cycle-desc">Dana dipakai untuk memanipulasi hukum dan menggerakkan aparat demi memenangkan pemilu.</p>
+                </div>
+                
+                <div class="cycle-arrow">
+                    <i data-lucide="arrow-down"></i>
+                </div>
+                
+                <div class="cycle-item">
+                    <div class="cycle-number">TAHAP 03</div>
+                    <h3 class="cycle-title">Kebijakan Pro-Oligarki</h3>
+                    <p class="cycle-desc">Setelah berkuasa, rezim mengeluarkan kebijakan (izin tambang, proyek, dll) yang menguntungkan para pemodal.</p>
+                </div>
+                
+                <div class="cycle-arrow">
+                    <i data-lucide="arrow-down"></i>
+                </div>
+                
+                <div class="cycle-item">
+                    <div class="cycle-number">TAHAP 04</div>
+                    <h3 class="cycle-title">Oligarki Makin Kuat</h3>
+                    <p class="cycle-desc">Para pemodal semakin kaya dan kuat, siap mendanai siklus berikutnya dengan ONGKOS yang lebih besar.</p>
+                </div>
+                
+                <div class="cycle-arrow">
+                    <i data-lucide="rotate-ccw"></i>
+                </div>
+                
+                <div class="cycle-alert">
+                    <h3>Siklus Berulang Terus</h3>
+                    <p>Siklus ini terus berulang, mengikis kekuatan rakyat.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section">
+            <div class="section-number">BAGIAN 03</div>
+            <h2 class="section-title">Dampaknya Bagi Kita Semua</h2>
+            
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <div class="impact-icon">
+                        <i data-lucide="theater"></i>
+                    </div>
+                    <h3 class="impact-title">Demokrasi Ilusif</h3>
+                    <p class="impact-desc">Pemilu hanya menjadi formalitas. Kekuasaan sejati berada di tangan segelintir elite.</p>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-icon">
+                        <i data-lucide="scale"></i>
+                    </div>
+                    <h3 class="impact-title">Matinya Keadilan</h3>
+                    <p class="impact-desc">Hukum menjadi alat tawar-menawar, bukan lagi panglima tertinggi.</p>
+                </div>
+
+                <div class="impact-card">
+                    <div class="impact-icon">
+                        <i data-lucide="trending-down"></i>
+                    </div>
+                    <h3 class="impact-title">Korupsi Sistematis</h3>
+                    <p class="impact-desc">Hubungan transaksional antara penguasa dan pengusaha menjadi norma, merugikan negara dan rakyat.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section">
+            <div class="section-number">BAGIAN 04</div>
+            <h2 class="section-title">Bagaimana Kita Melawan?</h2>
+            
+            <div class="action-grid">
+                <div class="action-item">
+                    <div class="action-icon">
+                        <i data-lucide="shield"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>Reformasi Aparat Negara</h3>
+                        <p>Kembalikan Polri & TNI sebagai penjaga negara, bukan alat kekuasaan.</p>
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="action-icon">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>Perkuat Masyarakat Sipil</h3>
+                        <p>Terus awasi, kritik, dan tuntut akuntabilitas pemerintah. Jangan diam!</p>
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <div class="action-icon">
+                        <i data-lucide="link-2-off"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>Putus Rantai Oligarki</h3>
+                        <p>Dorong regulasi pendanaan politik yang transparan dan dukung gerakan anti-korupsi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-content">
+                <div class="hashtags">#JagaDemokrasi #DirtyVote</div>
+                
+                <div class="social-links">
+                    <a href="https://x.com/DirtyVote" class="social-link-small" target="_blank" rel="noopener noreferrer">
+                        <i data-lucide="twitter"></i>
+                        <span>Twitter</span>
+                    </a>
+                    <a href="https://www.youtube.com/@DirtyVote" class="social-link-small" target="_blank" rel="noopener noreferrer">
+                        <i data-lucide="youtube"></i>
+                        <span>YouTube</span>
+                    </a>
+                    <a href="https://www.instagram.com/dirtyvote/" class="social-link-small" target="_blank" rel="noopener noreferrer">
+                        <i data-lucide="instagram"></i>
+                        <span>Instagram</span>
+                    </a>
+                </div>
+                
+                <p class="footer-disclaimer">
+                    Konten ini dibuat untuk tujuan edukasi dan analisis politik. 
+                    <br>Berdasarkan video investigasi <strong>Dirty Vote</strong>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <div class="scroll-indicator"></div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Progress bar
+        function updateProgressBar() {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            document.querySelector('.progress-bar').style.width = scrollPercent + '%';
+        }
+
+        // Scroll indicator
+        function handleScrollIndicator() {
+            const scrollIndicator = document.querySelector('.scroll-indicator');
+            if (window.scrollY > 200) {
+                scrollIndicator.style.opacity = '0';
+            } else {
+                scrollIndicator.style.opacity = '1';
+            }
+        }
+
+        window.addEventListener('scroll', function() {
+            updateProgressBar();
+            handleScrollIndicator();
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    entry.target.classList.add('animated');
+                }
+            });
+        }, observerOptions);
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.section').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+                observer.observe(el);
+            });
+
+            // Add interactive classes
+            document.querySelectorAll('.pillar, .impact-card, .action-item, .cycle-item').forEach(el => {
+                el.classList.add('interactive-element');
+            });
+
+            // Create floating particles
+            createParticles();
+        });
+
+        // Floating particles effect
+        function createParticles() {
+            const header = document.querySelector('header');
+            const particles = document.createElement('div');
+            particles.classList.add('particles');
+            
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                particles.appendChild(particle);
+            }
+            
+            header.appendChild(particles);
+        }
+
+        // Enhanced hover effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add ripple effect to cards
+            document.querySelectorAll('.pillar, .impact-card, .action-item').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = card.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+                    
+                    card.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+    </script>
+
+    <style>
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
+</body>
+</html>
