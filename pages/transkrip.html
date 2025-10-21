@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transkrip - Dirty Vote II</title>
+    <meta name="description" content="Transkrip lengkap dialog dan narasi dalam film Dirty Vote II">
+    <meta name="keywords" content="Dirty Vote, Politik Indonesia, Dokumenter, Pemilu, Demokrasi, Transkrip">
+    <link rel="stylesheet" href="../styles.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <!-- Navigation will be loaded here by JavaScript -->
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Page Header -->
+        <section class="hero-section">
+            <div class="hero-container">
+                <h2>Transkrip</h2>
+                <p>Transkrip lengkap dialog dan narasi dalam film</p>
+            </div>
+        </section>
+
+        <!-- Transcript Section -->
+        <section class="transcript-section">
+            <div class="container">
+
+                <!-- Loading State -->
+                <div id="transcript-loading" class="transcript-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Memuat transkrip...</p>
+                </div>
+                
+                <!-- Error State -->
+                <div id="transcript-error" class="transcript-error" style="display: none;">
+                    <div class="error-content">
+                        <h3>Error Memuat Transkrip</h3>
+                        <p>Maaf, terjadi kesalahan saat memuat file transkrip. Silakan coba lagi nanti.</p>
+                        <button id="retry-load" class="retry-button">Coba Lagi</button>
+                    </div>
+                </div>
+                
+                <!-- Transcript Container with Sidebar Layout -->
+                <div id="transcript-container" class="transcript-container" style="display: none;">
+                    
+                    <!-- Sidebar Navigation -->
+                    <div class="transcript-sidebar">
+                        <div class="sidebar-content">
+                            <h3>Navigasi Transkrip</h3>
+                            
+                            <!-- Search Container -->
+                            <div class="search-container">
+                                <input type="text" id="transcript-search" placeholder="Cari dalam transkrip..." />
+                                <button id="search-btn">
+                                    <i data-lucide="search" class="lucide-icon"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Search Navigation -->
+                            <div id="search-navigation" class="search-navigation">
+                                <button id="prev-search" class="search-nav-btn">
+                                    <i data-lucide="chevron-up" class="lucide-icon"></i>
+                                </button>
+                                <span id="search-results-info" class="search-results-info">0 dari 0</span>
+                                <button id="next-search" class="search-nav-btn">
+                                    <i data-lucide="chevron-down" class="lucide-icon"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Controls Options -->
+                            <div class="controls-options">
+                                <select id="font-size" class="font-selector">
+                                    <option value="small">Kecil</option>
+                                    <option value="medium" selected>Sedang</option>
+                                    <option value="large">Besar</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Chapter Navigation -->
+                            <div class="chapter-navigation">
+                                <h4>Daftar Chapter</h4>
+                                <ul id="chapters" class="chapters-list"></ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Transcript Content -->
+                    <div class="transcript-main">
+                        <div class="transcript-text" id="transcript-text"></div>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer will be loaded here by JavaScript -->
+
+    <!-- JavaScript for Navigation and Footer -->
+    <script src="../js/navigation.js"></script>
+    
+    <!-- Transcript JavaScript -->
+    <script>
+        class TranscriptViewer {
+            constructor() {
+                this.transcriptData = '';
+                this.chapters = [];
+                this.currentSearchTerm = '';
+                this.searchResults = [];
+                this.currentSearchIndex = 0;
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.loadTranscript();
+            }
+
+            bindEvents() {
+                // Search functionality
+                document.getElementById('transcript-search').addEventListener('input', (e) => {
+                    this.searchTranscript(e.target.value);
+                });
+
+                document.getElementById('search-btn').addEventListener('click', () => {
+                    const searchTerm = document.getElementById('transcript-search').value;
+                    this.searchTranscript(searchTerm);
+                });
+
+                // Search navigation
+                document.getElementById('prev-search').addEventListener('click', () => {
+                    this.navigateSearch(-1);
+                });
+
+                document.getElementById('next-search').addEventListener('click', () => {
+                    this.navigateSearch(1);
+                });
+
+                // Controls
+                document.getElementById('font-size').addEventListener('change', (e) => {
+                    this.changeFontSize(e.target.value);
+                });
+
+                // Retry button
+                document.getElementById('retry-load').addEventListener('click', () => {
+                    this.loadTranscript();
+                });
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 'f') {
+                        e.preventDefault();
+                        document.getElementById('transcript-search').focus();
+                    }
+                });
+            }
+
+            async loadTranscript() {
+                try {
+                    this.showLoading();
+                    
+                    // Try to load the transcript file
+                    const response = await fetch('../transcript/transcription.txt');
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const text = await response.text();
+                    this.transcriptData = text;
+                    this.parseTranscript(text);
+                    this.displayTranscript();
+                    this.showContent();
+                    
+                } catch (error) {
+                    console.error('Error loading transcript:', error);
+                    this.showError();
+                }
+            }
+
+            parseTranscript(text) {
+                // Extract chapters from the transcript
+                const lines = text.split('\n');
+                const chapters = [];
+                let currentChapter = null;
+
+                lines.forEach((line, index) => {
+                    line = line.trim();
+                    
+                    // Look for chapter markers (lines with "CHAPTER" or "---")
+                    if (line.includes('CHAPTER') || line.includes('---') || 
+                        (line.length > 10 && line === line.toUpperCase() && !line.includes(':'))) {
+                        if (currentChapter) {
+                            currentChapter.endLine = index - 1;
+                        }
+                        
+                        currentChapter = {
+                            title: line.replace(/^-+\s*/, '').replace(/\s*-+$/, '').trim(),
+                            startLine: index,
+                            endLine: null
+                        };
+                        
+                        if (currentChapter.title && currentChapter.title.length > 0) {
+                            chapters.push(currentChapter);
+                        }
+                    }
+                });
+
+                // Close the last chapter
+                if (currentChapter) {
+                    currentChapter.endLine = lines.length - 1;
+                }
+
+                this.chapters = chapters;
+                this.generateChapterList();
+            }
+
+            generateChapterList() {
+                const chaptersList = document.getElementById('chapters');
+                chaptersList.innerHTML = '';
+
+                this.chapters.forEach((chapter, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="#chapter-${index}" onclick="transcriptViewer.scrollToChapter(${index})">${chapter.title}</a>`;
+                    chaptersList.appendChild(li);
+                });
+            }
+
+            displayTranscript() {
+                const container = document.getElementById('transcript-text');
+                const lines = this.transcriptData.split('\n');
+                let html = '';
+                let currentChapterIndex = 0;
+
+                lines.forEach((line, index) => {
+                    line = line.trim();
+                    if (!line) {
+                        html += '<br>';
+                        return;
+                    }
+
+                    // Check if this line starts a new chapter
+                    const chapter = this.chapters.find(ch => ch.startLine === index);
+                    if (chapter) {
+                        html += `<div class="chapter-marker" id="chapter-${currentChapterIndex}">
+                                   <h3 class="chapter-title">${chapter.title}</h3>
+                                 </div>`;
+                        currentChapterIndex++;
+                        return;
+                    }
+
+                    // Parse timestamps (format: MM:SS or HH:MM:SS)
+                    const timestampMatch = line.match(/^(\d{1,2}:\d{2}(?::\d{2})?)\s+(.+)$/);
+                    if (timestampMatch) {
+                        const [, timestamp, content] = timestampMatch;
+                        const capitalizedContent = this.capitalizeSentences(content);
+                        html += `<div class="transcript-line">
+                                   <span class="timestamp">${timestamp}</span>
+                                   <span class="content">${this.highlightSearch(capitalizedContent)}</span>
+                                 </div>`;
+                    } else {
+                        // Regular line or line without timestamp
+                        const content = timestampMatch ? timestampMatch[2] : line;
+                        
+                        // Check if it's a speaker line (contains ":")
+                        if (content.includes(':') && content.indexOf(':') < 50) {
+                            const [speaker, ...rest] = content.split(':');
+                            const speakerText = rest.join(':').trim();
+                            const capitalizedSpeakerText = this.capitalizeSentences(speakerText);
+                            html += `<div class="transcript-line speaker-line">
+                                       <span class="speaker">${speaker.trim()}:</span>
+                                       <span class="content">${this.highlightSearch(capitalizedSpeakerText)}</span>
+                                     </div>`;
+                        } else {
+                            const capitalizedContent = this.capitalizeSentences(content);
+                            html += `<div class="transcript-line">
+                                       <span class="content">${this.highlightSearch(capitalizedContent)}</span>
+                                     </div>`;
+                        }
+                    }
+                });
+
+                container.innerHTML = html;
+            }
+
+            highlightSearch(text) {
+                if (!this.currentSearchTerm || this.currentSearchTerm.length < 2) {
+                    return text;
+                }
+
+                const regex = new RegExp(`(${this.currentSearchTerm})`, 'gi');
+                return text.replace(regex, '<mark class="search-highlight">$1</mark>');
+            }
+
+            capitalizeSentences(text) {
+                if (!text) return text;
+                
+                // Split text by sentence-ending punctuation (., !, ?, :)
+                // But preserve the punctuation and spaces
+                return text.replace(/(^|[.!?:]\s+)([a-z])/g, (match, punctuation, letter) => {
+                    return punctuation + letter.toUpperCase();
+                });
+            }
+
+            searchTranscript(term) {
+                this.currentSearchTerm = term;
+                this.displayTranscript();
+                
+                // Update search results and navigation
+                if (term.length >= 2) {
+                    this.updateSearchResults();
+                    this.showSearchNavigation();
+                } else {
+                    this.hideSearchNavigation();
+                }
+            }
+            
+            updateSearchResults() {
+                this.searchResults = Array.from(document.querySelectorAll('.search-highlight'));
+                this.currentSearchIndex = 0;
+                
+                // Update results info
+                const resultsInfo = document.getElementById('search-results-info');
+                if (this.searchResults.length > 0) {
+                    resultsInfo.textContent = `1 dari ${this.searchResults.length}`;
+                    this.scrollToCurrentResult();
+                } else {
+                    resultsInfo.textContent = '0 dari 0';
+                }
+                
+                // Update button states
+                this.updateNavigationButtons();
+            }
+            
+            navigateSearch(direction) {
+                if (this.searchResults.length === 0) return;
+                
+                // Remove current highlight
+                if (this.searchResults[this.currentSearchIndex]) {
+                    this.searchResults[this.currentSearchIndex].classList.remove('current-result');
+                }
+                
+                // Update index
+                this.currentSearchIndex += direction;
+                if (this.currentSearchIndex < 0) {
+                    this.currentSearchIndex = this.searchResults.length - 1;
+                } else if (this.currentSearchIndex >= this.searchResults.length) {
+                    this.currentSearchIndex = 0;
+                }
+                
+                // Update display
+                this.scrollToCurrentResult();
+                this.updateSearchResultsInfo();
+                this.updateNavigationButtons();
+            }
+            
+            scrollToCurrentResult() {
+                if (this.searchResults[this.currentSearchIndex]) {
+                    // Add current highlight
+                    this.searchResults[this.currentSearchIndex].classList.add('current-result');
+                    
+                    // Scroll to result
+                    this.searchResults[this.currentSearchIndex].scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                }
+            }
+            
+            updateSearchResultsInfo() {
+                const resultsInfo = document.getElementById('search-results-info');
+                if (this.searchResults.length > 0) {
+                    resultsInfo.textContent = `${this.currentSearchIndex + 1} dari ${this.searchResults.length}`;
+                }
+            }
+            
+            updateNavigationButtons() {
+                const prevBtn = document.getElementById('prev-search');
+                const nextBtn = document.getElementById('next-search');
+                
+                prevBtn.disabled = this.searchResults.length === 0;
+                nextBtn.disabled = this.searchResults.length === 0;
+            }
+            
+            showSearchNavigation() {
+                document.getElementById('search-navigation').classList.add('active');
+            }
+            
+            hideSearchNavigation() {
+                document.getElementById('search-navigation').classList.remove('active');
+                // Remove all current result highlights
+                document.querySelectorAll('.current-result').forEach(el => {
+                    el.classList.remove('current-result');
+                });
+            }
+
+            toggleTimestamps() {
+                this.showTimestamps = !this.showTimestamps;
+                const btn = document.getElementById('toggle-timestamps');
+                btn.classList.toggle('active');
+                btn.textContent = this.showTimestamps ? 'Sembunyikan Timestamp' : 'Tampilkan Timestamp';
+                this.displayTranscript();
+            }
+
+            changeFontSize(size) {
+                const transcriptText = document.getElementById('transcript-text');
+                transcriptText.className = transcriptText.className.replace(/font-\w+/, '');
+                transcriptText.classList.add(`font-${size}`);
+            }
+
+            scrollToChapter(index) {
+                const chapterElement = document.getElementById(`chapter-${index}`);
+                if (chapterElement) {
+                    chapterElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+
+            showLoading() {
+                document.getElementById('transcript-loading').style.display = 'block';
+                document.getElementById('transcript-error').style.display = 'none';
+                document.getElementById('transcript-container').style.display = 'none';
+            }
+
+            showError() {
+                document.getElementById('transcript-loading').style.display = 'none';
+                document.getElementById('transcript-error').style.display = 'block';
+                document.getElementById('transcript-container').style.display = 'none';
+            }
+
+            showContent() {
+                document.getElementById('transcript-loading').style.display = 'none';
+                document.getElementById('transcript-error').style.display = 'none';
+                document.getElementById('transcript-container').style.display = 'flex';
+            }
+        }
+
+        // Initialize transcript viewer when DOM is loaded
+        let transcriptViewer;
+        document.addEventListener('DOMContentLoaded', () => {
+            transcriptViewer = new TranscriptViewer();
+            // Initialize Lucide icons
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

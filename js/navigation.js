@@ -3,6 +3,85 @@
  * Include this file in all pages that use the navigation and footer components
  */
 
+class NavigationLoader {
+    constructor() {
+        this.navigationContainer = null;
+        this.init();
+    }
+
+    init() {
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.loadNavigation());
+        } else {
+            this.loadNavigation();
+        }
+    }
+
+    async loadNavigation() {
+        // Check if navigation already exists
+        const existingNav = document.querySelector('#main-navigation');
+        if (existingNav) {
+            return; // Navigation already loaded
+        }
+
+        try {
+            // Determine correct path based on current location
+            const currentPath = window.location.pathname;
+            const isInPagesFolder = currentPath.includes('/pages/');
+            const navPath = isInPagesFolder ? '../includes/navigation.html' : 'includes/navigation.html';
+            
+            const response = await fetch(navPath);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const navigationHTML = await response.text();
+            
+            // Insert navigation at the beginning of body
+            document.body.insertAdjacentHTML('afterbegin', navigationHTML);
+            
+            // Fix navigation links based on current page location
+            this.fixNavigationLinks();
+            
+            // Initialize NavigationManager after loading
+            if (!window.navigationManager) {
+                window.navigationManager = new NavigationManager();
+            }
+
+        } catch (error) {
+            console.warn('Navigation could not be loaded:', error);
+            // Fallback: navigation content is already in the page
+            if (!window.navigationManager) {
+                window.navigationManager = new NavigationManager();
+            }
+        }
+    }
+
+    fixNavigationLinks() {
+        const currentPath = window.location.pathname;
+        const isInPagesFolder = currentPath.includes('/pages/');
+        
+        // Fix brand link
+        const brandLink = document.querySelector('.nav-brand-link');
+        if (brandLink) {
+            brandLink.href = isInPagesFolder ? '../index.html' : 'index.html';
+        }
+        
+        // Fix navigation links
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            const dataPage = link.getAttribute('data-page');
+            
+            if (dataPage === 'index') {
+                link.href = isInPagesFolder ? '../index.html' : 'index.html';
+            } else {
+                link.href = isInPagesFolder ? `${dataPage}.html` : `pages/${dataPage}.html`;
+            }
+        });
+    }
+}
+
 class NavigationManager {
     constructor() {
         this.navToggle = null;
@@ -81,17 +160,21 @@ class NavigationManager {
         // Get current page name
         const currentPage = this.getCurrentPageName();
         
-        // Remove active class from all links
-        this.navLinks.forEach(link => link.classList.remove('active'));
+        // Remove active class and aria-current from all links first
+        this.navLinks.forEach(link => {
+            link.classList.remove('active');
+            link.removeAttribute('aria-current');
+        });
 
         // Add active class to current page link
+        let activeSet = false;
         this.navLinks.forEach(link => {
             const linkPage = this.getLinkPageName(link);
-            if (linkPage === currentPage) {
+            
+            if (linkPage === currentPage && !activeSet) {
                 link.classList.add('active');
                 link.setAttribute('aria-current', 'page');
-            } else {
-                link.removeAttribute('aria-current');
+                activeSet = true;
             }
         });
     }
@@ -101,10 +184,11 @@ class NavigationManager {
         const filename = path.split('/').pop();
         
         // Handle different possible filenames
-        if (!filename || filename === '' || filename === 'index.html') {
+        if (!filename || filename === '' || filename === 'index.html' || filename === '/') {
             return 'index';
         }
         
+        // Remove .html extension if present
         return filename.replace('.html', '');
     }
 
@@ -142,6 +226,8 @@ class NavigationManager {
         });
     }
 
+
+
     // Public method to programmatically close mobile menu
     close() {
         this.closeMobileMenu();
@@ -175,7 +261,12 @@ class FooterManager {
         }
 
         try {
-            const response = await fetch('includes/footer.html');
+            // Determine correct path to footer based on current page location
+            const currentPath = window.location.pathname;
+            const isInPagesFolder = currentPath.includes('/pages/');
+            const footerPath = isInPagesFolder ? '../includes/footer.html' : 'includes/footer.html';
+            
+            const response = await fetch(footerPath);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -191,19 +282,47 @@ class FooterManager {
             } else {
                 body.insertAdjacentHTML('beforeend', footerHTML);
             }
+            
+            // Fix footer links based on current page location
+            this.fixFooterLinks();
 
         } catch (error) {
             console.warn('Footer could not be loaded:', error);
             // Fallback: footer content is already in the page
         }
     }
+
+    fixFooterLinks() {
+        const currentPath = window.location.pathname;
+        const isInPagesFolder = currentPath.includes('/pages/');
+        
+        // Fix home link
+        const homeLink = document.querySelector('.footer-home-link');
+        if (homeLink) {
+            homeLink.href = isInPagesFolder ? '../index.html' : 'index.html';
+        }
+        
+        // Fix page links
+        const pageLinks = document.querySelectorAll('.footer-page-link');
+        pageLinks.forEach(link => {
+            const originalHref = link.getAttribute('href');
+            if (originalHref.startsWith('/pages/')) {
+                const pageName = originalHref.replace('/pages/', '');
+                link.href = isInPagesFolder ? pageName : `pages/${pageName}`;
+            }
+        });
+    }
 }
 
-// Create global instances
-window.navigationManager = new NavigationManager();
-window.footerManager = new FooterManager();
+// Create global instances (prevent duplicates)
+if (!window.navigationLoader) {
+    window.navigationLoader = new NavigationLoader();
+}
+if (!window.footerManager) {
+    window.footerManager = new FooterManager();
+}
 
 // Export for modules if needed
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { NavigationManager, FooterManager };
+    module.exports = { NavigationLoader, NavigationManager, FooterManager };
 }
