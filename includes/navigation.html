@@ -1,0 +1,84 @@
+<!-- Reusable Navigation Component -->
+<!-- Include this file in other pages using JavaScript or server-side includes -->
+
+<nav id="main-navigation">
+    <div class="nav-container">
+        <div class="nav-brand">
+            <a href="index.html">
+                <h1>Dirty Vote II</h1>
+            </a>
+        </div>
+        <div class="nav-menu">
+            <ul>
+                <li><a href="index.html" class="nav-link" data-page="index">Beranda</a></li>
+                <li><a href="tentang.html" class="nav-link" data-page="tentang">Tentang "Dirty Vote II"</a></li>
+                <li><a href="transkrip.html" class="nav-link" data-page="transkrip">Transkrip</a></li>
+                <li><a href="fakta.html" class="nav-link" data-page="fakta">Daftar Fakta</a></li>
+                <li><a href="unduhan.html" class="nav-link" data-page="unduhan">Unduhan</a></li>
+            </ul>
+        </div>
+        <div class="nav-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+</nav>
+
+<!-- Navigation JavaScript -->
+<script>
+    // Navigation functionality
+    function initializeNavigation() {
+        const navToggle = document.querySelector('.nav-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        if (navToggle && navMenu) {
+            // Toggle mobile menu
+            navToggle.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+                navToggle.classList.toggle('active');
+            });
+
+            // Close menu when clicking on a link
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    navMenu.classList.remove('active');
+                    navToggle.classList.remove('active');
+                });
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!navToggle.contains(event.target) && !navMenu.contains(event.target)) {
+                    navMenu.classList.remove('active');
+                    navToggle.classList.remove('active');
+                }
+            });
+        }
+
+        // Set active navigation link
+        setActiveNavLink();
+    }
+
+    // Set active navigation link based on current page
+    function setActiveNavLink() {
+        const currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            const linkPage = link.getAttribute('data-page');
+            if (linkPage === currentPage) {
+                link.classList.add('active');
+            }
+        });
+    }
+
+    // Initialize when DOM is loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeNavigation);
+    } else {
+        initializeNavigation();
+    }
+</script>
